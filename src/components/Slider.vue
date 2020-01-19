@@ -1,8 +1,13 @@
 <template>
 <div>
-    <transition-group name='fade' tag='div'>
-      <div v-for="i in [currentIndex]" :key='i'>
-        <img :src="currentImg" />
+    <transition-group name="fade" tag="div">
+      <div v-for="(image,index) in images"
+      :key='index'
+      v-show="currentIndex == index"
+      :style="{backgroundImage: `url(${image})`}"
+      class="slide"
+      mode="out-in">
+          <p>{{ image }}</p>
       </div>
     </transition-group>
     <a class="prev" @click="prev" href='#'>&#10094;</a>
@@ -26,6 +31,13 @@ export default {
     }
   },
 
+  props: {
+    delay: {
+      type: Number,
+      default: 4000
+    }
+  },
+
   
     mounted: function() {
       this.startSlide();
@@ -33,43 +45,55 @@ export default {
   
     methods: {
       startSlide: function() {
-        this.timer = setInterval(this.next, 4000);
+        this.timer = setInterval(this.next, this.delay);
       },
-  
   
       next: function() {
-        this.currentIndex += 1
+        this.currentIndex += 1;
+        if(this.currentIndex >= this.images.length) {
+          this.currentIndex=0;
+        }
       },
       prev: function() {
-        this.currentIndex -= 1
+        this.currentIndex -= 1;
+        if(this.currentIndex < 0) {
+          this.currentIndex = this.images.length - 1;
+        }
       }
     },
   
     computed: {
-      currentImg: function() {
-        return this.images[Math.abs(this.currentIndex) % this.images.length];
-      }
+      // currentImg: function() {
+      //   return this.images[Math.abs(this.currentIndex) % this.images.length];
+      // }
     }
   
 }
 </script>
 
-<style>
+<style lang="scss">
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.9s ease;
-  overflow: hidden;
-  visibility: visible;
-  position: absolute;
-  width:100%;
+  transition: all 3.9s ease;
+  //visibility: visible;
   opacity: 1;
 }
 
 .fade-enter,
 .fade-leave-to {
-  visibility: hidden;
-  width:100%;
+  //visibility: hidden;
   opacity: 0;
+}
+
+.slide {
+  min-height: 40rem;
+  width: 100%;
+  background-size: cover;
+  position: absolute;
+
+  > p {
+    margin: 0;
+  }
 }
 
 img {
@@ -90,15 +114,16 @@ width:100%
   border-radius: 0 4px 4px 0;
   text-decoration: none;
   user-select: none;
+  background-color: rgba(0,0,0,0.4);
 }
 
 /* Position the "next button" to the right */
 .next {
-  right: 0;
+  right: 10px;
 }
 
 .prev {
-  left: 0;
+  left: 10px;
 }
 
 /* On hover, add a black background color with a little bit see-through */

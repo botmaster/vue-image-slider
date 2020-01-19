@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Slider />
+    <Slider :delay="120000"/>
   </div>
 </template>
 
